@@ -37,6 +37,7 @@
   <modules>
     <module>jobs-service</module>
     <module>data-index</module>
+    <module>packages/management-console</module>
   </modules>
 
 </project>
