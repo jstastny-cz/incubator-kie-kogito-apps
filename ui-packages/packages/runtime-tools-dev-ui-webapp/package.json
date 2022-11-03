@@ -29,7 +29,9 @@
     "clean": "rimraf dist",
     "codegen": "graphql-codegen",
     "cypress:run": "cypress run",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "start:it": "concurrently 'webpack-dev-server --color --config webpack.it.js' 'yarn run dev:server'",
+    "test:it": "start-server-and-test 'yarn start:it' 9000 'yarn cypress:run' && echo"
   },
   "dependencies": {
     "@babel/standalone": "^7.15.3",

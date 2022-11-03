@@ -9,7 +9,9 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const swEditor = require("@kie-tools/serverless-workflow-diagram-editor-assets");
 
-module.exports = {
+module.exports = function(env) {
+    const DIST_DIR = env?.DIST_DIR ?? 'dist'
+return {
   entry: {
     standalone: path.resolve(__dirname, 'src', 'standalone', 'standalone.ts'),
     envelope: path.resolve(__dirname, 'src', 'standalone', 'EnvelopeApp.ts'),
@@ -46,13 +48,13 @@ module.exports = {
     new FileManagerPlugin({
       events: {
         onEnd: {
-          mkdir:['./dist/resources/webapp/'],
+          mkdir:[`./${DIST_DIR}/resources/webapp/`],
           copy: [
-            { source: './dist/*.js', destination: './dist/resources/webapp/' },
-            { source: './dist/*.map', destination: './dist/resources/webapp/' },
-            { source: './dist/fonts', destination: './dist/resources/webapp/' },
-            { source: './dist/monitoring-webapp', destination: './dist/resources/webapp/monitoring-webapp' },
-            { source: './dist/custom-dashboard-view', destination: './dist/resources/webapp/custom-dashboard-view' }
+            { source: `./${DIST_DIR}/*.js`, destination: `./${DIST_DIR}/resources/webapp/` },
+            { source: `./${DIST_DIR}/*.map`, destination: `./${DIST_DIR}/resources/webapp/` },
+            { source: `./${DIST_DIR}/fonts`, destination: `./${DIST_DIR}/resources/webapp/` },
+            { source: `./${DIST_DIR}/monitoring-webapp`, destination: `./${DIST_DIR}/resources/webapp/monitoring-webapp` },
+            { source: `./${DIST_DIR}/custom-dashboard-view`, destination: `./${DIST_DIR}/resources/webapp/custom-dashboard-view` }
           ]
         },
       },
@@ -70,7 +72,10 @@ module.exports = {
             loader: 'ts-loader',
             options: {
               configFile: path.resolve('./tsconfig.json'),
-              allowTsInNodeModules: true
+              allowTsInNodeModules: true,
+              compilerOptions: {
+                "declarationDir": DIST_DIR
+              }
             }
           }
         ]
@@ -251,7 +256,7 @@ module.exports = {
     ]
   },
   output: {
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, DIST_DIR)
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
@@ -268,4 +273,5 @@ module.exports = {
     symlinks: false,
     cacheWithContext: false
   }
+}
 };
