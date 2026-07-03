@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.hibernate.query.criteria.*;
 import org.kie.kogito.index.jpa.model.AbstractEntity;
 import org.kie.kogito.index.jpa.model.DataIsolationKeyDescriptor;
 import org.kie.kogito.index.jpa.model.DataIsolationKeyDescriptorRegistry;
@@ -36,6 +37,7 @@ import org.kie.kogito.process.Processes;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 
@@ -95,9 +97,9 @@ public class JPAQuery<E extends AbstractEntity, T> implements Query<T> {
 
     @Override
     public List<T> execute() {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<E> criteriaQuery = builder.createQuery(entityClass);
-        Root<E> root = criteriaQuery.from(entityClass);
+        HibernateCriteriaBuilder builder = (HibernateCriteriaBuilder) em.getCriteriaBuilder();
+        JpaCriteriaQuery<E> jpaMainQuery = builder.createQuery(entityClass);
+        JpaRoot<E> root = jpaMainQuery.from(entityClass);
 
         applyFilters(builder, jpaMainQuery, root);
         if (sortBy != null && !sortBy.isEmpty()) {
@@ -105,17 +107,19 @@ public class JPAQuery<E extends AbstractEntity, T> implements Query<T> {
                 Path attributePath = getAttributePath(root, f.getAttribute());
                 return f.getSort() == SortDirection.ASC ? builder.asc(attributePath) : builder.desc(attributePath);
             }).collect(toList());
-            criteriaQuery.orderBy(orderBy);
+            jpaMainQuery.orderBy(orderBy);
         }
-        criteriaQuery.select(root);
-        jakarta.persistence.Query query = em.createQuery(criteriaQuery);
+        jpaMainQuery.select(root);
+        TypedQuery<E> query = em.createQuery(jpaMainQuery);
         if (limit != null) {
             query.setMaxResults(limit);
         }
         if (offset != null) {
             query.setFirstResult(offset);
         }
-        return (List<T>) query.getResultList().stream().map(mapper).collect(toList());
+        return query.getResultList().stream()
+                .map(mapper)
+                .collect(toList());
     }
 
     /**
