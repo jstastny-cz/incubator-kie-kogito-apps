@@ -162,6 +162,7 @@
           <bpmn2:formalExpression>parent</bpmn2:formalExpression>
         </bpmn2:resourceAssignmentExpression>
       </bpmn2:potentialOwner>
+    </bpmn2:userTask>
     <bpmn2:callActivity id="_CALL_CHILD_SUBPROCESS" name="Call Child Process" calledElement="child">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -194,6 +195,7 @@
         <bpmn2:sourceRef>_CALL_CHILD_SUBPROCESS_dataOutputX</bpmn2:sourceRef>
         <bpmn2:targetRef>data</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
+    </bpmn2:callActivity>
     <bpmn2:parallelGateway id="_PARALLEL_JOIN" name="Join" gatewayDirection="Converging">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -203,6 +205,7 @@
       <bpmn2:incoming>_SF_USERTASK_TO_JOIN</bpmn2:incoming>
       <bpmn2:incoming>_SF_SUBPROCESS_TO_JOIN</bpmn2:incoming>
       <bpmn2:outgoing>_SF_JOIN_TO_END</bpmn2:outgoing>
+    </bpmn2:parallelGateway>
     <bpmn2:endEvent id="_END_EVENT" name="End">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -211,6 +214,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>_SF_JOIN_TO_END</bpmn2:incoming>
     </bpmn2:endEvent>
+  </bpmn2:process>
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="parent">
       <bpmndi:BPMNShape id="shape__START_EVENT" bpmnElement="_START_EVENT">
